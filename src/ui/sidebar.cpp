@@ -81,8 +81,8 @@ public:
         m_check->setColor(Color{255, 255, 255, 255});
     }
 
-    SizeF sizeHint() const override { return {0, 34}; }
-    double heightForWidth(double) const override { return 34; }
+    SizeF sizeHint() const override { return {0, 30}; }
+    double heightForWidth(double) const override { return 30; }
     bool acceptsPointer() const override { return true; }
 
 protected:

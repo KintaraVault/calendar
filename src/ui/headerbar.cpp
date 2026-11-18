@@ -25,6 +25,8 @@ using cutefish::i18n::tr;
 static constexpr double ButtonSize = 32;
 // The narrowest the view switch gets.
 static constexpr double SwitchWidth = 240;
+// The view switch and the search field are one height.
+static constexpr double ControlHeight = 30;
 static const std::vector<std::string> Views{"day", "week", "month", "year"};
 
 NavigationButton::NavigationButton(std::string icon, std::string text)
@@ -153,7 +155,7 @@ void HeaderBar::layout()
     // As far from the end as from the top, in the whole device pixels both
     // are drawn at: the window shows only whole ones of a fractional width.
     const double scale = window ? window->scale() : 1;
-    const double searchTop = top + (ButtonSize - 30) / 2;
+    const double searchTop = top + (ButtonSize - ControlHeight) / 2;
     double end = (std::floor(geometry().width * scale) - std::round(searchTop * scale)) / scale;
     const double searchWidth = windowWidth >= 1000 ? 220 : 160;
     // The search field goes when the view switch would have no room beside it.
@@ -161,7 +163,7 @@ void HeaderBar::layout()
     const bool searchFits = end - searchWidth - 12 - start >= SwitchWidth;
     if (searchFits)
         end -= searchWidth;
-    m_search->setGeometry({end, searchTop, searchWidth, 30});
+    m_search->setGeometry({end, searchTop, searchWidth, ControlHeight});
     m_search->setFill(Style::controlTint());
     m_search->setGlyphColor(theme.disabledText);
     m_search->setVisible(searchFits);
@@ -172,7 +174,7 @@ void HeaderBar::layout()
     m_viewSwitch->setTrackColor(Style::controlTint());
     m_viewSwitch->setCurrentIndex(int(std::find(Views.begin(), Views.end(), m_window->view()) - Views.begin()));
     m_viewSwitch->setGeometry({std::max(start, std::min(stop - width, (windowWidth - width) / 2)),
-                               top + (ButtonSize - 36) / 2, width, 36});
+                               searchTop, width, ControlHeight});
 }
 
 NavigationRow::NavigationRow(CalendarWindow* window)

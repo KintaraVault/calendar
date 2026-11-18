@@ -157,6 +157,7 @@ void EventDialog::buildContent()
     timing->setLayoutHints({.fillWidth = true});
     m_allDaySwitch = timing->addRow(tr("All Day"))->addChild<Switch>();
     m_allDaySwitch->setName("allDaySwitch");
+    m_allDaySwitch->setPadding({8, 0, 0, 0});
     m_allDaySwitch->setChecked(m_allDay);
     m_allDaySwitch->onToggled = [this](bool checked) {
         m_allDay = checked;

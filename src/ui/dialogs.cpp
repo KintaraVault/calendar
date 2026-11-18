@@ -838,6 +838,7 @@ SettingsDialog::SettingsDialog(Window* parent, CalendarModel* model)
 
     Switch* numbers = card->addRow(tr("Show Week Numbers"))->addChild<Switch>();
     numbers->setName("weekNumbersSwitch");
+    numbers->setPadding({8, 0, 0, 0});
     numbers->setChecked(model->showWeekNumbers());
     numbers->onToggled = [model](bool checked) { model->setShowWeekNumbers(checked); };
 

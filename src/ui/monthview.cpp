@@ -226,8 +226,8 @@ void MonthView::layout()
         const bool isToday = i == today;
         label->setText(dayText(i));
         label->setWeight(isToday ? 600 : 400);
-        label->setColor(isToday ? theme.highlightedText : inMonth ? theme.text : theme.disabledText);
-        label->setOpacity(inMonth || isToday ? 1 : 0.6);
+        label->setColor(isToday ? theme.highlightedText : inMonth ? theme.text
+                        : Style::withAlpha(theme.disabledText, 0.6));
         // Centred on where the today plate would be, capitals on its middle.
         const SizeF size = label->sizeHint();
         const double cellRight = gutter + (i % 7 + 1) * cellWidth;
