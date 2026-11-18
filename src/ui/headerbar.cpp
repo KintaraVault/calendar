@@ -23,6 +23,8 @@ using namespace cutefish::ui;
 using cutefish::i18n::tr;
 
 static constexpr double ButtonSize = 32;
+// The narrowest the view switch gets.
+static constexpr double SwitchWidth = 240;
 static const std::vector<std::string> Views{"day", "week", "month", "year"};
 
 NavigationButton::NavigationButton(std::string icon, std::string text)
@@ -137,13 +139,11 @@ void HeaderBar::layout()
     const double windowWidth = window ? window->size().width : geometry().width;
     const double top = buttonsTopMargin();
     const bool docked = m_window->sidebarDocked();
-    const bool overlay = m_window->sidebarOverlay();
 
     // The toggle ends at the sidebar's edge, or follows the window buttons.
     const WindowHeader* header = dynamic_cast<const WindowHeader*>(parent());
     const double inset = header ? header->leadingInset() : 0;
     double x = docked ? CalendarWindow::SidebarWidth - 12 - ButtonSize : inset + 11;
-    m_sidebarButton->setChecked(overlay);
     // The plate keeps the glyph where the button's own plate had it.
     const double plate = HeaderButtonGroup::kSegment;
     const double plateInset = (ButtonSize - plate) / 2;
@@ -156,19 +156,20 @@ void HeaderBar::layout()
     const double searchTop = top + (ButtonSize - 30) / 2;
     double end = (std::floor(geometry().width * scale) - std::round(searchTop * scale)) / scale;
     const double searchWidth = windowWidth >= 1000 ? 220 : 160;
-    end -= searchWidth;
+    // The search field goes when the view switch would have no room beside it.
+    const double start = startEnd + 12;
+    const bool searchFits = end - searchWidth - 12 - start >= SwitchWidth;
+    if (searchFits)
+        end -= searchWidth;
     m_search->setGeometry({end, searchTop, searchWidth, 30});
     m_search->setFill(Style::controlTint());
     m_search->setGlyphColor(theme.disabledText);
-    m_search->setOpacity(overlay ? 0 : 1);
-    m_search->setEnabled(!overlay);
+    m_search->setVisible(searchFits);
 
     // Centred on the window, moved aside only as far as the buttons beside it need.
-    const double start = startEnd + 12;
     const double stop = end - 12;
-    const double width = std::max(240.0, std::min(300.0, stop - start));
+    const double width = std::max(SwitchWidth, std::min(300.0, stop - start));
     m_viewSwitch->setTrackColor(Style::controlTint());
-    m_viewSwitch->setVisible(!overlay);
     m_viewSwitch->setCurrentIndex(int(std::find(Views.begin(), Views.end(), m_window->view()) - Views.begin()));
     m_viewSwitch->setGeometry({std::max(start, std::min(stop - width, (windowWidth - width) / 2)),
                                top + (ButtonSize - 36) / 2, width, 36});

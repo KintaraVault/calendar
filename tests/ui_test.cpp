@@ -231,27 +231,45 @@ TEST_F(UiTest, SidebarFollowsWidth)
     advance(*frame, 300);
     EXPECT_EQ(find(frame, "sidebar").size(), 1u);
 
-    // A narrow window hides it, shows it over the calendar on demand, and
-    // gives it back when wide again.
+    // A narrow window hides it, and grows by it when it is asked for.
     frame->resize({780, 640});
     advance(*frame, 300);
     EXPECT_TRUE(find(frame, "sidebar").empty());
     EXPECT_TRUE(m_model->sidebarVisible());
     window.toggleSidebar();
-    advance(*frame, 300);
+    advance(*frame);
+    EXPECT_EQ(frame->size().width, 780 + CalendarWindow::SidebarWidth);
     EXPECT_EQ(find(frame, "sidebar").size(), 1u);
-    EXPECT_TRUE(window.sidebarOverlay());
-    // A press on the calendar puts it away.
-    TestInput::click(*frame, {600, 400});
+    EXPECT_EQ(window.sidebarReveal(), 1.0);
+    EXPECT_EQ(find(frame, "keyTarget").front()->geometry().width, 780);
+    frame->resize({600, 640});
     advance(*frame, 300);
-    EXPECT_FALSE(window.sidebarOverlay());
+    window.toggleSidebar();
+    advance(*frame);
+    EXPECT_EQ(frame->size().width, CalendarWindow::DockWidth);
+    EXPECT_EQ(window.sidebarReveal(), 1.0);
+
+    // A narrow window that cannot grow gives it some of the calendar's width,
+    // and the search field goes when the header has no room for it.
+    WindowStates tiled;
+    tiled.tiled = true;
+    TestInput::configure(*frame, 640, 640, tiled);
+    advance(*frame, 300);
     EXPECT_TRUE(find(frame, "sidebar").empty());
+    EXPECT_EQ(find(frame, "searchField").size(), 1u);
     window.toggleSidebar();
     advance(*frame, 300);
-    frame->resize({1100, 740});
+    EXPECT_EQ(frame->size().width, 640);
+    EXPECT_EQ(find(frame, "sidebar").size(), 1u);
+    EXPECT_EQ(find(frame, "keyTarget").front()->geometry().width, 640 - CalendarWindow::SidebarWidth);
+    EXPECT_TRUE(find(frame, "searchField").empty());
+    window.toggleSidebar();
     advance(*frame, 300);
-    EXPECT_EQ(window.dockReveal(), 1.0);
-    EXPECT_FALSE(window.sidebarOverlay());
+    EXPECT_TRUE(find(frame, "sidebar").empty());
+    EXPECT_TRUE(m_model->sidebarVisible());
+    TestInput::configure(*frame, 1100, 740, WindowStates{});
+    advance(*frame, 300);
+    EXPECT_EQ(window.sidebarReveal(), 1.0);
 }
 
 TEST_F(UiTest, KeysMoveTheDayAndShortcutsSwitchViews)
