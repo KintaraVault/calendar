@@ -97,8 +97,6 @@ EventDialog::EventDialog(Window* parent, CalendarModel* model, EventForm event)
     , m_event(std::move(event))
     , m_dialog(std::make_unique<DialogWindow>(parent, dialogTitle(m_event), 480))
 {
-    // Cancel or Close closes it.
-    m_dialog->setCloseVisible(false);
     m_allDay = m_event.allDay;
     m_startDate = m_event.start.date();
     m_endDate = m_event.end.date();
@@ -137,7 +135,6 @@ void EventDialog::buildContent()
     auto content = std::make_unique<ColumnLayout>();
     content->setName("eventDialog");
     content->setSpacing(12);
-    content->setPadding({0, 0, 0, 8});
 
     FormCard* names = content->addChild<FormCard>();
     names->setLayoutHints({.fillWidth = true});
@@ -273,9 +270,6 @@ void EventDialog::buildContent()
     m_notes->setPadding({14, 12, 14, 12});
     notes->addWide(std::move(notesArea), 84);
 
-    RowLayout* actions = content->addChild<RowLayout>();
-    actions->setSpacing(8);
-    actions->setLayoutHints({.fillWidth = true, .margins = {0, 4, 0, 0}});
     if (m_event.readOnly) {
         // A subscription's event: shown as it is, with nothing to save.
         for (TextField* field : {m_title, m_location})
@@ -285,21 +279,19 @@ void EventDialog::buildContent()
                                                           m_endDateButton, m_endTime, m_repeatBox, m_repeatEndBox,
                                                           m_untilButton, m_countField, m_alarmBox, m_calendarBox})
             control->setEnabled(false);
+    } else {
+        RowLayout* actions = content->addChild<RowLayout>();
+        actions->setSpacing(8);
+        actions->setLayoutHints({.fillWidth = true, .margins = {0, 4, 0, 0}});
+        if (!isNew()) {
+            DialogButton* remove = actions->addChild<DialogButton>(tr("Delete Event"));
+            remove->setName("deleteButton");
+            remove->onClicked = [this] {
+                if (onDeleteRequested)
+                    onDeleteRequested();
+            };
+        }
         actions->addChild<View>()->setLayoutHints({.fillWidth = true});
-        DialogButton* done = actions->addChild<DialogButton>(tr("Close"), true);
-        done->setName("closeButton");
-        done->onClicked = [this] { close(); };
-    } else if (!isNew()) {
-        DialogButton* remove = actions->addChild<DialogButton>(tr("Delete Event"));
-        remove->setName("deleteButton");
-        remove->onClicked = [this] {
-            if (onDeleteRequested)
-                onDeleteRequested();
-        };
-    }
-    if (!m_event.readOnly) {
-        actions->addChild<View>()->setLayoutHints({.fillWidth = true});
-        actions->addChild<DialogButton>(tr("Cancel"))->onClicked = [this] { close(); };
         m_saveButton = actions->addChild<DialogButton>(isNew() ? tr("Add") : tr("Save"), true);
         m_saveButton->setName("saveButton");
         m_saveButton->onClicked = [this] { save(); };

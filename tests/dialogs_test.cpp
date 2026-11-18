@@ -574,7 +574,6 @@ TEST_F(DialogsTest, ASubscribedEventOpensReadOnly)
     advance(*frame);
     EXPECT_TRUE(find(frame, "saveButton").empty());
     EXPECT_TRUE(find(frame, "deleteButton").empty());
-    ASSERT_TRUE(one<View>(frame, "closeButton"));
     auto* title = one<TextField>(frame, "titleField");
     ASSERT_TRUE(title);
     EXPECT_EQ(title->text(), "National Day");
@@ -587,7 +586,7 @@ TEST_F(DialogsTest, ASubscribedEventOpensReadOnly)
     EXPECT_EQ(calendar->currentText(), "Holidays");
 
     TestInput::typeKey(*frame, key::Return, ControlModifier);
-    TestInput::click(*frame, centreOf(one<View>(frame, "closeButton")));
+    frame->onCloseRequested();
     runPosted();
     EXPECT_FALSE(m_window->editor());
     EXPECT_EQ(m_store->event(key)->summary(), "National Day");
