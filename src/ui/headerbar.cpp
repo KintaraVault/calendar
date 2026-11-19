@@ -104,19 +104,19 @@ HeaderBar::HeaderBar(CalendarWindow* window)
     , m_search(addChild<SearchField>(tr("Search events")))
 {
     // Never shown: the window buttons centre on its capitals.
-    m_title->setName("buttonsMetrics");
+    m_title->setName("header:buttonsMetrics");
     m_title->setFontSize(Style::points(11));
     m_title->setBaseline(CalendarWindow::HeaderBaseline);
     m_title->setVisible(false);
-    m_sidebarButton->setName("sidebarButton");
+    m_sidebarButton->setName("header:sidebar");
     m_sidebarButton->onClicked = [window] { window->toggleSidebar(); };
-    m_viewSwitch->setName("viewSwitch");
+    m_viewSwitch->setName("header:viewSwitch");
     m_viewSwitch->setFontSize(Style::points(9));
     m_viewSwitch->onCurrentChanged = [window](int index) {
         if (index >= 0 && index < int(Views.size()) && Views[size_t(index)] != window->view())
             window->setView(Views[size_t(index)]);
     };
-    m_search->setName("searchField");
+    m_search->setName("header:search");
     m_search->setFontSize(Style::points(9));
     m_search->onTextChanged = [this] {
         if (onSearchChanged)
@@ -184,13 +184,13 @@ NavigationRow::NavigationRow(CalendarWindow* window)
     , m_today(addChild<NavigationButton>(std::string(), tr("Today")))
     , m_next(addChild<NavigationButton>("chevron-right"))
 {
-    m_title->setName("periodTitle");
+    m_title->setName("navigation:title");
     m_title->setFontSize(Style::points(18));
-    m_previous->setName("previousButton");
+    m_previous->setName("navigation:previous");
     m_previous->onClicked = [window] { window->step(-1); };
-    m_today->setName("todayButton");
+    m_today->setName("navigation:today");
     m_today->onClicked = [window] { window->goToday(); };
-    m_next->setName("nextButton");
+    m_next->setName("navigation:next");
     m_next->onClicked = [window] { window->step(1); };
 
     const auto update = [this] {

@@ -30,8 +30,8 @@ CalendarContent::CalendarContent(CalendarWindow* window)
     , m_viewArea(addChild<View>())
     , m_search(addChild<SearchResults>(window))
 {
-    setName("keyTarget");
-    m_viewArea->setName("viewArea");
+    setName("calendar:content");
+    m_viewArea->setName("calendar:viewArea");
     m_viewArea->setClipsChildren(true);
     m_search->setVisible(false);
 
