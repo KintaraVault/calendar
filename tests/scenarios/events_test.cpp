@@ -48,7 +48,7 @@ TEST_F(EventsTest, SelectedEventIsEditedAndDeletedFromTheKeyboard)
     driver.click("navigation:next");
     ASSERT_EQ(driver.countShown("event:block"), 1u);
 
-    driver.clickShown("event:block");
+    driver.click("event:block");
     driver.typeKey(key::Return);
     std::unique_ptr<TestDriver> editor = dialogOver(driver);
     ASSERT_TRUE(editor);
@@ -65,7 +65,7 @@ TEST_F(EventsTest, SelectedEventIsEditedAndDeletedFromTheKeyboard)
     EXPECT_EQ(eventsOn(tomorrow).size(), 1u);
 
     pauseBetweenClicks();
-    driver.clickShown("event:block");
+    driver.click("event:block");
     driver.typeKey(key::Escape);
     // Nothing selected, so Return edits nothing.
     driver.typeKey(key::Return);
@@ -87,7 +87,7 @@ TEST_F(EventsTest, RepeatingEventsAskWhichOccurrences)
     // The second of the series goes.
     ASSERT_EQ(eventsOn(today, 3).size(), 3u);
     driver.click("navigation:next");
-    driver.clickShown("event:block");
+    driver.click("event:block");
     driver.typeKey(key::Delete);
     std::unique_ptr<TestDriver> dialog = dialogOver(driver);
     ASSERT_TRUE(dialog);
@@ -113,7 +113,7 @@ TEST_F(EventsTest, ASubscribedEventOpensReadOnly)
 
     m_model->setView("month");
     TestDriver& driver = open();
-    driver.clickShown("event:line");
+    driver.click("event:line");
     driver.typeKey(key::Return);
     std::unique_ptr<TestDriver> editor = dialogOver(driver);
     ASSERT_TRUE(editor);
@@ -137,7 +137,7 @@ TEST_F(EventsTest, ASubscribedEventOpensReadOnly)
 
     // Nor does the keyboard delete it.
     pauseBetweenClicks();
-    driver.clickShown("event:line");
+    driver.click("event:line");
     driver.typeKey(key::Delete);
     runPosted();
     EXPECT_TRUE(m_store->event(key));

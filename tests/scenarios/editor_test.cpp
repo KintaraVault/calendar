@@ -216,7 +216,7 @@ TEST_F(EditorTest, ChangingTheRuleOfARepeatingEventAsksOnlyForLaterOnes)
     m_model->setView("day");
     TestDriver& driver = open();
     driver.click("navigation:next");
-    driver.clickShown("event:block");
+    driver.click("event:block");
     driver.typeKey(key::Return);
     std::unique_ptr<TestDriver> editor = dialogOver(driver);
     ASSERT_TRUE(editor);

@@ -61,7 +61,7 @@ TEST_F(CalendarsTest, TheCalendarDialogRenamesAndRecolours)
 {
     const CalendarItem calendar = m_model->calendars().front();
     TestDriver& driver = open();
-    driver.clickShown("calendars:" + calendar.name, MouseButton::Right);
+    driver.click("calendars:" + calendar.name, MouseButton::Right);
     driver.choosePopupItem("Edit…");
     std::unique_ptr<TestDriver> dialog = dialogOver(driver);
     ASSERT_TRUE(dialog);
@@ -105,12 +105,12 @@ TEST_F(CalendarsTest, DroppedCalendarFilesAreImported)
     // Only calendar files are taken.
     std::string refused;
     TestDriver refusing(driver.window(), [&refused](const std::string& message) { refused = message; });
-    EXPECT_FALSE(refusing.dropAfterHover("calendar:content", uriList("file:///tmp/notes.txt\r\n")));
+    EXPECT_FALSE(refusing.drop("calendar:content", uriList("file:///tmp/notes.txt\r\n")));
     EXPECT_FALSE(refused.empty());
     runPosted();
     EXPECT_FALSE(driver.dialog());
 
-    EXPECT_TRUE(driver.dropAfterHover("calendar:content", uriList("# dropped\r\nfile://" + file + "\r\n")));
+    EXPECT_TRUE(driver.drop("calendar:content", uriList("# dropped\r\nfile://" + file + "\r\n")));
     std::unique_ptr<TestDriver> dialog = dialogOver(driver);
     ASSERT_TRUE(dialog);
     ASSERT_TRUE(dialog->shows("import:import"));
@@ -137,7 +137,7 @@ TEST_F(CalendarsTest, TheImportDialogAddsToTheChosenCalendar)
     }
 
     TestDriver& driver = open();
-    EXPECT_TRUE(driver.dropAfterHover("calendar:content", uriList(list)));
+    EXPECT_TRUE(driver.drop("calendar:content", uriList(list)));
     std::unique_ptr<TestDriver> dialog = dialogOver(driver);
     ASSERT_TRUE(dialog);
     EXPECT_TRUE(dialog->showsText("2 files"));
@@ -157,7 +157,7 @@ TEST_F(CalendarsTest, TheImportDialogAddsToTheChosenCalendar)
 TEST_F(CalendarsTest, OneFileIsNamedWithoutItsEscapes)
 {
     TestDriver& driver = open();
-    EXPECT_TRUE(driver.dropAfterHover("calendar:content", uriList("file:///tmp/My%20Trip.ics\r\n")));
+    EXPECT_TRUE(driver.drop("calendar:content", uriList("file:///tmp/My%20Trip.ics\r\n")));
     std::unique_ptr<TestDriver> dialog = dialogOver(driver);
     ASSERT_TRUE(dialog);
     EXPECT_TRUE(dialog->showsText("My Trip.ics"));
