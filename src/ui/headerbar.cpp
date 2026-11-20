@@ -12,6 +12,7 @@
 #include <ui/painter.h>
 #include <ui/search_field.h>
 #include <ui/segmented_control.h>
+#include <ui/toolbar_surface.h>
 #include <ui/window.h>
 #include <ui/window_header.h>
 
@@ -28,6 +29,7 @@ NavigationButton::NavigationButton(std::string icon, std::string text)
 {
     if (!icon.empty()) {
         m_icon = addChild<Icon>(std::move(icon), 16);
+        m_icon->setInkCentered(true);
     } else {
         m_label = addChild<Label>(std::move(text));
         m_label->setFontSize(Style::points(9));
@@ -45,7 +47,7 @@ void NavigationButton::layout()
 {
     const SizeF size = geometry().size();
     if (m_icon)
-        m_icon->setGeometry({Style::centred(size.width, 16), Style::centred(size.height, 16), 16, 16});
+        m_icon->setGeometry({(size.width - 16) / 2, (size.height - 16) / 2, 16, 16});
     if (m_label) {
         const SizeF text = m_label->sizeHint();
         m_label->setGeometry({Style::centred(size.width, text.width), Style::centred(size.height, text.height),
@@ -55,9 +57,10 @@ void NavigationButton::layout()
 
 void NavigationButton::paint(Painter& painter)
 {
-    const Theme& theme = Theme::current();
-    const double alpha = m_pressed ? 0.12 : m_hovered ? 0.08 : 0.05;
-    painter.fillRoundedRect(localRect(), geometry().height / 2, Style::withAlpha(theme.text, alpha));
+    const bool dark = Theme::current().darkMode;
+    toolbar_surface::capsule(painter, localRect(), dark);
+    if (isEnabled() && (m_pressed || m_hovered))
+        toolbar_surface::highlight(painter, localRect().shrunk(Margins::all(2)), dark, m_pressed);
 }
 
 void NavigationButton::pointerEnter()
@@ -104,8 +107,10 @@ HeaderBar::HeaderBar(CalendarWindow* window)
     m_title->setVisible(false);
     m_sidebarButton->setName("sidebarButton");
     m_sidebarButton->setGlyph("sidebar", 24);
+    m_sidebarButton->setToolbarAppearance(true);
     m_sidebarButton->onClicked = [window] { window->toggleSidebar(); };
     m_viewSwitch->setName("viewSwitch");
+    m_viewSwitch->setToolbarAppearance(true);
     m_viewSwitch->setFontSize(Style::points(9));
     m_viewSwitch->onCurrentChanged = [window](int index) {
         if (index >= 0 && index < int(Views.size()) && Views[size_t(index)] != window->view())

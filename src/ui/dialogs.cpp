@@ -87,7 +87,7 @@ SmallDialog::SmallDialog(Window* parent, std::string title, double width)
     auto root = std::make_unique<Root>();
     m_column = root->column();
     m_window->setContentView(std::move(root));
-    m_window->setBackgroundColor(ColorId::SecondBackground);
+    m_window->setBackgroundColor(ColorId::PanelBackground);
     m_window->setTitle(title);
     m_window->setTransientParent(parent, true);
     m_window->onCloseRequested = [this] { close(); };
