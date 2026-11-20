@@ -11,12 +11,14 @@
 #include <base/event_loop.h>
 #include <base/i18n.h>
 #include <ui/cell_layout.h>
+#include <ui/color_provider.h>
 #include <ui/icon.h>
 #include <ui/label.h>
 #include <ui/layout.h>
 #include <ui/painter.h>
 #include <ui/round_image_button.h>
 
+#include <algorithm>
 #include <cmath>
 
 using namespace cutefish::ui;
@@ -57,8 +59,8 @@ protected:
 
     void paint(Painter& painter) override
     {
-        const Theme& theme = Theme::current();
-        painter.fillRoundedRect(localRect(), theme.mediumRadius, theme.secondBackground);
+        painter.drawRoundedRect(localRect(), {12, 0, themeCorners()}, color(ColorId::PanelBackground),
+                                1 / painter.scale(), color(ColorId::Separator));
     }
 
 private:
@@ -80,10 +82,14 @@ public:
     {
         setName(std::string(m_calendar.readOnly ? "subscriptions:" : "calendars:") + m_calendar.name);
         m_check->setColor(Color{255, 255, 255, 255});
+        m_name->setElide(Label::Elide::Right);
     }
 
-    SizeF sizeHint() const override { return {0, 30}; }
-    double heightForWidth(double) const override { return 30; }
+    SizeF sizeHint() const override { return {0, heightForWidth(0)}; }
+    double heightForWidth(double) const override
+    {
+        return std::max(double(design::sidebarRowHeight), m_name->sizeHint().height + 8);
+    }
     bool acceptsPointer() const override { return true; }
 
 protected:
@@ -101,18 +107,17 @@ protected:
     void paint(Painter& painter) override
     {
         const Theme& theme = Theme::current();
-        // Inset 6 into the radius 10 card.
         if (m_pressed)
-            painter.fillRoundedRect(localRect(), theme.mediumRadius - 6, Style::withAlpha(theme.text, 0.08));
+            painter.fillRoundedRect(localRect(), design::menuItemRadius, color(ColorId::ItemPressed), themeCorners());
         else if (m_hovered)
-            painter.fillRoundedRect(localRect(), theme.mediumRadius - 6, Style::withAlpha(theme.text, 0.04));
+            painter.fillRoundedRect(localRect(), design::menuItemRadius, theme.text.withAlpha(.06), themeCorners());
 
-        const Color color = Style::toColor(m_calendar.color);
+        const Color swatch = Style::toColor(m_calendar.color);
         const RectF box{10, (geometry().height - 16) / 2, 16, 16};
         if (m_calendar.visible)
-            painter.fillRoundedRect(box, 5, color);
+            painter.fillRoundedRect(box, 4, swatch);
         else
-            painter.strokeRoundedRect(box, 5, color, painter.borderWidth(1.5));
+            painter.strokeRoundedRect(box, 4, swatch, painter.borderWidth(1.5));
     }
 
     void pointerEnter() override
