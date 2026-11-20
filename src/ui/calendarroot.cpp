@@ -14,6 +14,7 @@
 #include <base/event_loop.h>
 #include <base/url.h>
 #include <ui/application.h>
+#include <ui/color_provider.h>
 #include <ui/drag.h>
 #include <ui/keys.h>
 #include <ui/painter.h>
@@ -194,7 +195,7 @@ void CalendarRoot::layout()
 void CalendarRoot::paint(Painter& painter)
 {
     const double x = CalendarWindow::SidebarWidth * m_window->sidebarReveal();
-    painter.fillRect({x, 0, geometry().width - x, geometry().height}, Theme::current().secondBackground);
+    painter.fillRect({x, 0, geometry().width - x, geometry().height}, color(ColorId::PanelBackground));
 }
 
 bool CalendarRoot::canDrop(const DropOffer& offer) const
